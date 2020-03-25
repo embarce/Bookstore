@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.embrace.demo.goods.dao.GoodsDao">
+    <!--统计要新增的商品数量-->
+    <select id="countgoodsBybookId" parameterType="int" resultType="int">
+        select count(good_id)
+        from t_goods_table
+        where is_delete = 0
+        and good_id = #{goodsId}
+    </select>
+    <!--新增商品-->
+    <insert id="addGoods" parameterType="com.embrace.demo.goods.entity.goodsInfo">
+        insert into t_goods_table
+        (goods_name,
+         good_id,
+         price,
+         is_delete
+         )
+        values
+           (#{goodsName},
+            #{goodId},
+            #{price},
+            #{isDeleted}
+            )
+    </insert>
+    <!--查询商品列表分页查询-->
+    <select id="listGoodsByPage" parameterType="com.embrace.demo.goods.entity.goodsInfo" resultType="com.embrace.demo.goods.entity.goodsInfo">
+        select
+            a.goods_name goodsName,
+            a.good_id goodId,
+            a.price price,
+            a.is_delete isDeleted
+        from t_goods_table a
+        where is_delete = 0
+        order by good_id desc
+    </select>
+
+    <!--删除商品-->
+    <update id="deleteGoods" parameterType="com.embrace.demo.goods.entity.goodsInfo">
+        update t_goods_table
+        set
+        is_delete = 1,
+        change_time = now(),
+        version = version + 1
+        where good_id in
+        <foreach item="item" index="index" collection="listCode" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </update>
+
+
+</mapper>
